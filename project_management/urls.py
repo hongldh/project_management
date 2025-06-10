@@ -25,6 +25,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # 添加认证路由
     # path('accounts/logout/', LogoutView.as_view(), name='logout'),
     path('', home_view, name='home'),  # 新增首页路由
-    path('task_schedule/', include('task_schedule.urls')),  # 任务排程应用
+    path('schedule_apply/', include('schedule_apply.urls')),  # 任务排程应用
     path('apply_approve/', include('apply_approve.urls')),  # 审批应用
 ]

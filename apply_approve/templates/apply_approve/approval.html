@@ -70,14 +70,6 @@
                         <td>{{ approval.4|localtime|date:"Y-m-d H:i" }}</td>  <!-- new_start_time -->
                         <td>{{ approval.5|localtime|date:"Y-m-d H:i" }}</td>  <!-- new_end_time -->
                         <td>{{ approval.6|localtime|date:"Y-m-d H:i:s"  }}</td>  <!-- modified_at -->
-{#                        <td>#}
-{#                            <input type="hidden" name="project_id" value="{{ approval.0 }}">#}
-{#                            <input type="hidden" name="equipment_id" value="{{ approval.1 }}">#}
-{#                            <input type="hidden" name="phase" value="{{ approval.2 }}">#}
-{#                            <input type="hidden" name="modified_at" value="{{ approval.6|date:'Y-m-d H:i:s' }}">#}
-{#                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">通过</button>#}
-{#                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">否决</button>#}
-{#                        </td>#}
                         <td>
                             <input type="checkbox" name="selected_approvals" value="{{ approval.0 }}_{{ approval.1 }}_{{ approval.2 }}_{{ approval.6|date:'Y-m-d H:i:s' }}">
                             <select name="action_{{ approval.0 }}_{{ approval.1 }}_{{ approval.2 }}_{{ approval.6|date:'Y-m-d H:i:s' }}">

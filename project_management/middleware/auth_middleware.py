@@ -27,8 +27,8 @@ class RoleBasedAccessMiddleware:
 
         # 定义路由权限规则
         allowed_paths = {
-            'supervisor': ['/task_schedule/', '/apply_approve/'],
-            'chargeman': ['/task_schedule/']
+            'supervisor': ['/schedule_apply/', '/apply_approve/'],
+            'chargeman': ['/schedule_apply/']
         }
 
         current_path = request.path

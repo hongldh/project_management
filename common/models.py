@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
 
-
+#访客角色表
 class customuser(AbstractUser):
     ROLE_CHOICES = (
         ('supervisor', '总管理员'),
@@ -17,7 +17,7 @@ class customuser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='chargeman')
 
 
-
+#项目基础信息表
 class ProjectBasicInfo(models.Model):
     project_id = models.CharField(max_length=50, primary_key=True, verbose_name='项目编号')
     project_name = models.CharField(max_length=100, verbose_name='项目名称')
@@ -30,7 +30,7 @@ class ProjectBasicInfo(models.Model):
     def __str__(self):
         return self.project_name
 
-
+#项目设备排程表
 class ProjectEquipmentSchedule(models.Model):
     project_id = models.CharField(max_length=50, verbose_name='项目编号')
     equipment_id = models.CharField(max_length=50, verbose_name='设备编号')
@@ -48,7 +48,7 @@ class ProjectEquipmentSchedule(models.Model):
     def __str__(self):
         return f"{self.project_id} - {self.equipment_name}"
 
-
+#项目设备排程修改记录表
 class ScheduleHistory(models.Model):
     project_id = models.CharField(max_length=50,  verbose_name='项目编号')
     equipment_id = models.CharField(max_length=50, verbose_name='设备编号')
@@ -67,4 +67,4 @@ class ScheduleHistory(models.Model):
         ordering = ['-modified_at']  # 按修改时间倒序
 
     def __str__(self):
-        return f"{self.project} {self.equipment_name} - {self.modified_at}"
+        return f"{self.project_id} {self.equipment_name} - {self.modified_at}"

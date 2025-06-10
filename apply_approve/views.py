@@ -48,41 +48,31 @@ def approval_view(request):
             with connection.cursor() as cursor:
                 if action == 'approve':
                     cursor.execute("""
+                        WITH TMP AS
+                        (
+                         SELECT
+                             equipment_quantity
+                            ,start_time
+                            ,end_time
+                         FROM common_schedulehistory
+                         WHERE project_id = %s
+                           AND equipment_id = %s
+                           AND phase = %s
+                           AND SUBSTRING(modified_at, 1, 19) = SUBSTRING(%s, 1, 19)
+                           AND processed_flag = 0
+                        )
                         UPDATE common_projectequipmentschedule
-                        SET 
-                            equipment_quantity = (
-                                SELECT equipment_quantity 
-                                FROM common_schedulehistory 
-                                WHERE project_id = %s 
-                                  AND equipment_id = %s 
-                                  AND phase = %s 
-                                  AND SUBSTRING(modified_at,1,19)=SUBSTRING(%s,1,19)
-                                  AND processed_flag = 0
-                            ),
-                            start_time = (
-                                SELECT start_time 
-                                FROM common_schedulehistory 
-                                WHERE project_id = %s 
-                                  AND equipment_id = %s 
-                                  AND phase = %s
-                                  AND SUBSTRING(modified_at,1,19)=SUBSTRING(%s,1,19)
-                                  AND processed_flag = 0
-                            ),
-                            end_time = (
-                                SELECT end_time 
-                                FROM common_schedulehistory 
-                                WHERE project_id = %s 
-                                  AND equipment_id = %s 
-                                  AND phase = %s
-                                  AND SUBSTRING(modified_at,1,19)=SUBSTRING(%s,1,19)
-                                  AND processed_flag = 0
-                            )
-                        WHERE 
-                            project_id = %s 
-                            AND equipment_id = %s 
+                        SET
+                            equipment_quantity = TMP.equipment_quantity
+                            ,start_time = TMP.start_time
+                            ,end_time = TMP.end_time
+                        FROM TMP
+                        WHERE
+                            project_id = %s
+                            AND equipment_id = %s
                             AND phase = %s
                         ;
-                    """, [project_id, equipment_id, phase,modified_at_utc,project_id, equipment_id, phase,modified_at_utc,project_id, equipment_id, phase,modified_at_utc,project_id, equipment_id, phase])
+                    """, [project_id, equipment_id, phase, modified_at_utc, project_id, equipment_id, phase])
 
                     cursor.execute("""
                         UPDATE common_schedulehistory
@@ -116,6 +106,7 @@ def approval_view(request):
         return redirect('.')
 
 
+    #GET请求
     with connection.cursor() as cursor:
         # 获取所有排程信息
         cursor.execute("""
@@ -142,19 +133,18 @@ def approval_view(request):
 
         # 获取待审批记录
         cursor.execute("""
-            SELECT sh.project_id, sh.equipment_id, sh.phase, 
-                   sh.equipment_quantity, sh.start_time, sh.end_time, sh.modified_at
+            SELECT project_id, equipment_id, phase, equipment_quantity, start_time, end_time, modified_at
             FROM (
-                SELECT project_id, equipment_id, phase, MAX(modified_at) as max_time 
-                FROM common_schedulehistory 
-                WHERE processed_flag = 0 
-                GROUP BY project_id, equipment_id, phase
-            ) latest 
-            JOIN common_schedulehistory sh 
-            ON sh.project_id = latest.project_id 
-            AND sh.equipment_id = latest.equipment_id 
-            AND sh.phase = latest.phase 
-            AND sh.modified_at = latest.max_time
+                SELECT project_id, equipment_id, phase, equipment_quantity, start_time, end_time, modified_at,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY project_id, equipment_id, phase 
+                           ORDER BY modified_at DESC
+                       ) as rn
+                FROM common_schedulehistory
+                WHERE processed_flag = 0
+            ) tmp
+            WHERE rn = 1
+
         """)
 
         # 添加时区转换

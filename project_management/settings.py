@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'common',
-    'task_schedule',
+    'schedule_apply',
     'apply_approve',
 ]
 
