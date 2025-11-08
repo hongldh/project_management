@@ -1,0 +1,88 @@
+<!-- schedule_apply_approve/templates/schedule_apply_approve/approval.html -->
+{% extends "base.html" %}
+{% load tz %}
+
+{% if user.is_authenticated %}
+  <div class="user-info">
+    当前用户：{{ user.username }}（{{ user.get_role_display }}）
+  </div>
+{% endif %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">设备制造排期审批</h2>
+
+    <!-- 当前排期表 -->
+    <div class="current-schedule">
+        <h3>当前排期</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>项目ID</th>
+                    <th>设备ID</th>
+                    <th>阶段</th>
+                    <th>数量</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.0 }}</td>  <!-- project_id -->
+                    <td>{{ schedule.1 }}</td>  <!-- equipment_id -->
+                    <td>{{ schedule.2 }}</td>  <!-- phase -->
+                    <td>{{ schedule.3 }}</td>  <!-- quantity -->
+                    <td>{{ schedule.4|localtime|date:"Y-m-d H:i" }}</td>  <!-- start_time -->
+                    <td>{{ schedule.5|localtime|date:"Y-m-d H:i" }}</td>  <!-- end_time -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 待审批变更 -->
+    <div class="pending-changes mt-5">
+        <h3>待审批变更</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="query_time" value="{{ query_time }}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>设备</th>
+                        <th>阶段</th>
+                        <th>新数量</th>
+                        <th>新开始时间</th>
+                        <th>新结束时间</th>
+                        <th>修改时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for approval in pending_approvals %}
+                    <tr>
+                        <td>{{ approval.0 }}</td>  <!-- project_id -->
+                        <td>{{ approval.1 }}</td>  <!-- equipment_id -->
+                        <td>{{ approval.2 }}</td>  <!-- phase -->
+                        <td>{{ approval.3 }}</td>  <!-- new_quantity -->
+                        <td>{{ approval.4|localtime|date:"Y-m-d H:i" }}</td>  <!-- new_start_time -->
+                        <td>{{ approval.5|localtime|date:"Y-m-d H:i" }}</td>  <!-- new_end_time -->
+                        <td>{{ approval.6|localtime|date:"Y-m-d H:i:s"  }}</td>  <!-- modified_at -->
+                        <td>
+                            <input type="checkbox" name="selected_approvals" value="{{ approval.0 }}_{{ approval.1 }}_{{ approval.2 }}_{{ approval.6|date:'Y-m-d H:i:s' }}">
+                            <select name="action_{{ approval.0 }}_{{ approval.1 }}_{{ approval.2 }}_{{ approval.6|date:'Y-m-d H:i:s' }}">
+                                <option value="approve">通过</option>
+                                <option value="reject">否决</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

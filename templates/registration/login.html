@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">用户登录</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">登录</button>
+                    <a href="{% url 'password_reset' %}" class="btn btn-link">忘记密码？</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

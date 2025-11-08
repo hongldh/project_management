@@ -1,0 +1,43 @@
+   {% extends "base.html" %}
+   {% load custom_filters %}
+
+   {% block content %}
+   <div class="container">
+       <h2 class="text-center mb-4">项目设备管理</h2>
+
+       <a href="{% url 'project_equipment:create' %}" class="btn btn-primary mb-3">添加新设备</a>
+       
+       <!-- 按项目分组显示 -->
+       {% regroup equipment_list by project_id as project_list %}
+       {% for project in project_list %}
+       <div class="project-group mb-4">
+           <h3>项目: {{ project.grouper }}</h3>
+           <table class="table table-striped">
+               <thead>
+                   <tr>
+                       <th>设备ID</th>
+                       <th>设备名称</th>
+                       <th>设备数量</th>
+                       <th>操作</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   {% for equipment in project.list %}
+                   <tr>
+                       <td>{{ equipment.equipment_id }}</td>
+                       <td>{{ equipment.equipment_name }}</td>
+                       <td>{{ equipment.equipment_quantity }}</td>
+                       <td>
+                           <a href="{% url 'project_equipment:update' equipment.id %}" class="btn btn-sm btn-warning">编辑</a>
+                           <a href="{% url 'project_equipment:delete' equipment.id %}" class="btn btn-sm btn-danger">删除</a>
+                       </td>
+                   </tr>
+                   {% endfor %}
+               </tbody>
+           </table>
+       </div>
+       {% endfor %}
+
+   </div>
+   {% endblock %}
+   

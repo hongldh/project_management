@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load tz %}
+{% load custom_filters %}
+
+{% if user.is_authenticated %}
+  <div class="user-info">
+    当前用户：{{ user.username }}（{{ user.get_role_display }}）
+  </div>
+{% endif %}
+
+{% block content %}
+<div class="container">
+    <h2  class="text-center mb-4">设备制造排期申请 - {{ project.project_name }} ({{ project.project_id }})</h2>
+    
+
+    <!-- 当前排期表 -->
+    <div class="current-schedule">
+        <h3>当前排期</h3>
+        <form method="post">
+            {% csrf_token %}
+            {% regroup schedules by equipment_id as equipment_list %}
+            {% for equipment in equipment_list %}
+            <div class="equipment-group mb-4">
+                {# 通过第一个元素获取项目名称 #}
+                <h4>
+                    {{ equipment.list.0.equipment_name }} ({{ equipment.grouper }})
+                    <span class="badge bg-info">理论完成进度：{{ progress_data|get_item:equipment.grouper }}%</span>
+                </h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>设备名称</th>
+                            <th>设备数量</th>
+                            <th>阶段</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in equipment.list %}
+                        <tr>
+                            <!-- 隐藏字段 -->
+{#                            <input type="hidden" name="project_id_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"#}
+{#                                   value="{{ schedule.project_id }}">#}
+{#                            <input type="hidden" name="equipment_id_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"#}
+{#                                   value="{{ schedule.equipment_id }}">#}
+                            <!-- 显示字段 -->
+                            <td>{{ schedule.equipment_name }} ({{ schedule.equipment_id }})</td>
+                            <td>
+                                <input type="number"
+                                       name="quantity_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"
+                                       value="{{ schedule.equipment_quantity }}"
+                                       class="form-control"
+                                       min="1">
+                            </td>
+                            <td>{{ schedule.phase }}</td>
+                            <td>
+                                <input type="datetime-local"
+                                       name="start_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"
+                                       value="{{ schedule.start_time|date:'Y-m-d\TH:i' }}">
+                            </td>
+                            <td>
+                                <input type="datetime-local"
+                                       name="end_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"
+                                       value="{{ schedule.end_time|date:'Y-m-d\TH:i' }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">保存修改</button>
+        </form>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="history mt-5">
+        <h3>修改历史</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>修改时间</th>
+                    <th>项目(项目ID)</th>
+                    <th>设备(设备ID)</th>
+                    <th>设备数量</th>
+                    <th>阶段</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in history %}
+                <tr>
+                    <td>{{ record.modified_at|localtime|date:"Y-m-d H:i:s"  }}</td>
+                    <td>{{ record.project_name }} ({{ record.project_id }})</td>
+                    <td>{{ record.equipment_name }} ({{ record.equipment_id }})</td>
+                    <td>{{ record.equipment_quantity }} </td>
+                    <td>{{ record.phase }}</td>
+                    <td>{{ record.start_time|localtime|date:"Y-m-d H:i"  }}</td>
+                    <td>{{ record.end_time|localtime|date:"Y-m-d H:i"  }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}项目管理平台{% endblock %}</title>
+    <!-- 引入 Bootstrap 或其他 CSS 框架 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 在现有user-info区块后添加 -->
+    <div class="auth-links text-end mt-2">
+        {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">退出登录</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">登录</a>
+        {% endif %}
+    </div>
+    <div class="container">
+        {% block content %}
+        <!-- 子模板内容将插入此处 -->
+        {% endblock %}
+    </div>
+</body>
+</html>

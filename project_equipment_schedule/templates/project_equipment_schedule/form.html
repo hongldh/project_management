@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>{% if object %}编辑排期{% else %}新建排期{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <!-- 项目ID下拉列表 -->
+                <div class="mb-3">
+                    <label class="form-label">项目ID</label>
+                    {% if not object %}  <!-- 新增模式 -->
+                        {{ form.project_id }}
+                    {% else %}  <!-- 编辑模式 -->
+                        <div class="form-control-plaintext">
+                            {{ form.instance.project_id|default:"" }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 设备ID下拉列表 -->
+                <div class="mb-3">
+                    <label class="form-label">设备编号</label>
+                    {% if not object %}  <!-- 新增模式 -->
+                        {{ form.equipment_id }}
+                    {% else %}  <!-- 编辑模式 -->
+                        <div class="form-control-plaintext">
+                            {{ form.instance.equipment_id|default:"" }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 设备名称（只读） -->
+                <div class="mb-3">
+                    <label class="form-label">设备名称</label>
+                    <div class="form-control-plaintext">
+                        {{ form.equipment_name|default:"" }}
+                    </div>
+                </div>
+
+                <!-- 设备数量（只读） -->
+               <div class="mb-3">
+                    <label class="form-label">设备数量</label>
+                    <div class="form-control-plaintext">
+                        {{ form.equipment_quantity|default:"" }}
+                    </div>
+                </div>
+
+                <!-- 阶段 -->
+                <div class="mb-3">
+                    <label class="form-label">阶段</label>
+                    {{ form.phase }}
+                </div>
+
+                <!-- 开始时间 -->
+                <div class="mb-3">
+                    {{ form.start_time.label_tag }}
+                    {{ form.start_time }}
+                </div>
+
+                <!-- 结束时间 -->
+                <div class="mb-3">
+                    {{ form.end_time.label_tag }}
+                    {{ form.end_time }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% if form.instance.pk %}{% url 'project_equipment_schedule:project_schedules' form.instance.project_id %}{% else %}{% url 'project_equipment_schedule:project_schedules' project.project_id %}{% endif %}" class="btn btn-secondary">取消</a>    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // 仅在新增模式启用AJAX
+    {% if not form.instance.pk %}
+    // 项目ID改变时加载设备列表
+    $('#id_project_id').change(function() {
+        var projectId = $(this).val();
+        $.ajax({
+            url: "{% url 'project_equipment_schedule:ajax_load_equipments' %}",
+            data: {'project_id': projectId},
+            success: function(data) {
+                var options = '<option value="">---------</option>';
+                $.each(data, function(index, equipment) {
+                    options += '<option value="' + equipment.equipment_id + '">' +
+                               equipment.equipment_id + '</option>';
+                });
+                $("#id_equipment_id").html(options);
+
+                // 重置设备名称和数量
+                $("#id_equipment_name").val('');
+                $("#id_equipment_quantity").val('');
+            }
+        });
+    });
+
+    // 设备ID改变时加载设备详情
+    $('#id_equipment_id').change(function() {
+        var projectId = $('#id_project_id').val();
+        var equipmentId = $(this).val();
+
+        if (projectId && equipmentId) {
+            $.ajax({
+                url: "{% url 'project_equipment_schedule:ajax_load_equipment_details' %}",
+                data: {
+                    'project_id': projectId,
+                    'equipment_id': equipmentId
+                },
+                success: function(data) {
+                    if (data) {
+                        $("#id_equipment_name").val(data.equipment_name);
+                        $("#id_equipment_quantity").val(data.equipment_quantity);
+                    }
+                }
+            });
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

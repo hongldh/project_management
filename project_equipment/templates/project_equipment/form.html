@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">
+        {% if object %}编辑{% else %}新增{% endif %}项目设备信息
+    </h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'project_equipment:list' %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}
