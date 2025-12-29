@@ -8,7 +8,53 @@
     
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="row">
+            <div class="col-md-6">
+                {% if object %}  <!-- 编辑模式 -->
+                    <!-- 项目编号显示为只读文本 -->
+                    <div class="mb-3">
+                        <label class="form-label">项目编号</label>
+                        <input type="text" class="form-control-plaintext" value="{{ object.project_id }}" readonly>
+                        <!-- 隐藏字段确保项目编号被提交 -->
+                        <input type="hidden" name="project_id" value="{{ object.project_id }}">
+                    </div>
+
+                    <!-- 其他字段 -->
+                    <div class="mb-3">
+                        {{ form.equipment_id.label_tag }}
+                        {{ form.equipment_id }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.equipment_name.label_tag }}
+                        {{ form.equipment_name }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.equipment_quantity.label_tag }}
+                        {{ form.equipment_quantity }}
+                    </div>
+                {% else %}  <!-- 新增模式 -->
+                    <!-- 项目编号下拉框 -->
+                    <div class="mb-3">
+                        {{ form.project_id.label_tag }}
+                        {{ form.project_id }}
+                    </div>
+
+                    <!-- 其他字段 -->
+                    <div class="mb-3">
+                        {{ form.equipment_id.label_tag }}
+                        {{ form.equipment_id }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.equipment_name.label_tag }}
+                        {{ form.equipment_name }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.equipment_quantity.label_tag }}
+                        {{ form.equipment_quantity }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary">保存</button>
         <a href="{% url 'project_equipment:list' %}" class="btn btn-secondary">取消</a>
     </form>

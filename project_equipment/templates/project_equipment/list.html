@@ -27,17 +27,18 @@
                        <td>{{ equipment.equipment_id }}</td>
                        <td>{{ equipment.equipment_name }}</td>
                        <td>{{ equipment.equipment_quantity }}</td>
-                       <td>
-                           <a href="{% url 'project_equipment:update' equipment.id %}" class="btn btn-sm btn-warning">编辑</a>
-                           <a href="{% url 'project_equipment:delete' equipment.id %}" class="btn btn-sm btn-danger">删除</a>
-                       </td>
+        <td>
+          <a href="{% url 'project_equipment:update' equipment.project_id equipment.equipment_id %}" class="btn btn-sm btn-warning">编辑</a>
+          <a href="{% url 'project_equipment:delete' equipment.project_id equipment.equipment_id %}" class="btn btn-sm btn-danger">删除</a>
+        </td>
                    </tr>
                    {% endfor %}
                </tbody>
            </table>
        </div>
        {% endfor %}
-
+       <div class="mt-5">
+           <a href="/" class="btn btn-secondary">返回</a>
+       </div>
    </div>
    {% endblock %}
-   

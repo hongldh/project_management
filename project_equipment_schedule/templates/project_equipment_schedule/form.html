@@ -1,123 +1,166 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <h2>{% if object %}编辑排期{% else %}新建排期{% endif %}</h2>
     <form method="post">
         {% csrf_token %}
+        <!-- 显示非字段错误 -->
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
         <div class="row">
             <div class="col-md-6">
-                <!-- 项目ID下拉列表 -->
+                <!-- 项目ID显示为固定文本 -->
                 <div class="mb-3">
                     <label class="form-label">项目ID</label>
-                    {% if not object %}  <!-- 新增模式 -->
-                        {{ form.project_id }}
-                    {% else %}  <!-- 编辑模式 -->
-                        <div class="form-control-plaintext">
-                            {{ form.instance.project_id|default:"" }}
-                        </div>
-                    {% endif %}
+                    <div class="form-control-plaintext">
+                        {{ project.project_id|default:form.instance.project_id|default:"" }}
+                    </div>
+                    <!-- 添加隐藏字段传递项目ID -->
+                    <input type="hidden" name="project_id" value="{{ project.project_id|default:form.instance.project_id|default:'' }}">
                 </div>
-
                 <!-- 设备ID下拉列表 -->
                 <div class="mb-3">
                     <label class="form-label">设备编号</label>
-                    {% if not object %}  <!-- 新增模式 -->
+                    {% if not object %}
+                    <!-- 新增模式 -->
+                    <div id="equipment_id_container">
                         {{ form.equipment_id }}
-                    {% else %}  <!-- 编辑模式 -->
-                        <div class="form-control-plaintext">
-                            {{ form.instance.equipment_id|default:"" }}
-                        </div>
+                    </div>
+                    <!-- 显示设备ID错误 -->
+                    {% if form.equipment_id.errors %}
+                    <div class="text-danger small">
+                        {{ form.equipment_id.errors }}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <!-- 编辑模式 -->
+                    <div class="form-control-plaintext">
+                        {{ form.instance.equipment_id|default:"" }}
+                    </div>
+                    <!-- 添加隐藏字段传递设备ID -->
+                    <input type="hidden" name="equipment_id" value="{{ form.instance.equipment_id|default:'' }}">
                     {% endif %}
                 </div>
-
                 <!-- 设备名称（只读） -->
                 <div class="mb-3">
                     <label class="form-label">设备名称</label>
-                    <div class="form-control-plaintext">
-                        {{ form.equipment_name|default:"" }}
-                    </div>
+                    <input type="text" id="equipment_name_field" class="form-control-plaintext" readonly value="{{ equipment_info.equipment_name|default:'' }}">
                 </div>
-
                 <!-- 设备数量（只读） -->
-               <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label">设备数量</label>
-                    <div class="form-control-plaintext">
-                        {{ form.equipment_quantity|default:"" }}
-                    </div>
+                    <input type="number" id="equipment_quantity_field" class="form-control-plaintext" readonly value="{{ equipment_info.equipment_quantity|default:0 }}">
                 </div>
-
                 <!-- 阶段 -->
                 <div class="mb-3">
                     <label class="form-label">阶段</label>
                     {{ form.phase }}
+                    <!-- 显示阶段错误 -->
+                    {% if form.phase.errors %}
+                    <div class="text-danger small">
+                        {{ form.phase.errors }}
+                    </div>
+                    {% endif %}
                 </div>
-
                 <!-- 开始时间 -->
                 <div class="mb-3">
                     {{ form.start_time.label_tag }}
                     {{ form.start_time }}
+                    <!-- 显示开始时间错误 -->
+                    {% if form.start_time.errors %}
+                    <div class="text-danger small">
+                        {{ form.start_time.errors }}
+                    </div>
+                    {% endif %}
                 </div>
-
                 <!-- 结束时间 -->
                 <div class="mb-3">
                     {{ form.end_time.label_tag }}
                     {{ form.end_time }}
+                    <!-- 显示结束时间错误 -->
+                    {% if form.end_time.errors %}
+                    <div class="text-danger small">
+                        {{ form.end_time.errors }}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">保存</button>
-        <a href="{% if form.instance.pk %}{% url 'project_equipment_schedule:project_schedules' form.instance.project_id %}{% else %}{% url 'project_equipment_schedule:project_schedules' project.project_id %}{% endif %}" class="btn btn-secondary">取消</a>    </form>
+        <a href="{% if form.instance.pk %}{% url 'project_equipment_schedule:project_equipment_list' form.instance.project_id %}{% else %}{% url 'project_equipment_schedule:project_equipment_list' project.project_id %}{% endif %}" class="btn btn-secondary">取消</a>
+    </form>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    // 仅在新增模式启用AJAX
-    {% if not form.instance.pk %}
-    // 项目ID改变时加载设备列表
-    $('#id_project_id').change(function() {
-        var projectId = $(this).val();
-        $.ajax({
-            url: "{% url 'project_equipment_schedule:ajax_load_equipments' %}",
-            data: {'project_id': projectId},
-            success: function(data) {
-                var options = '<option value="">---------</option>';
-                $.each(data, function(index, equipment) {
-                    options += '<option value="' + equipment.equipment_id + '">' +
-                               equipment.equipment_id + '</option>';
-                });
-                $("#id_equipment_id").html(options);
+// 测试jQuery是否加载
+console.log("jQuery version:", $.fn.jquery);
+console.log("Form instance pk:", "{{ form.instance.pk }}");
+console.log("Form instance equipment_id:", "{{ form.instance.equipment_id }}");
+console.log("Object:", "{{ object }}");
 
-                // 重置设备名称和数量
-                $("#id_equipment_name").val('');
-                $("#id_equipment_quantity").val('');
+// 使用立即执行函数确保jQuery已加载
+(function($) {
+    $(document).ready(function() {
+        console.log("Document ready!");
+
+        // 仅在新增模式启用AJAX - 使用object而不是form.instance.pk（因为复合主键问题）
+        {% if not object %}
+        console.log("In create mode, binding event to #id_equipment_id");
+
+        // 检查元素是否存在
+        var equipmentSelect = $('#id_equipment_id');
+        console.log("Equipment select found:", equipmentSelect.length);
+        console.log("Equipment select element:", equipmentSelect[0]);
+
+        // 设备ID改变时加载设备详情
+        equipmentSelect.on('change', function() {
+            var equipmentId = $(this).val();
+            var projectId = '{{ project.project_id|default:form.instance.project_id }}';
+
+            console.log("Equipment changed - Project ID:", projectId, "Equipment ID:", equipmentId);
+
+            if (projectId && equipmentId) {
+                $.ajax({
+                    url: "{% url 'project_equipment_schedule:ajax_load_equipment_details' %}",
+                    method: 'GET',
+                    dataType: 'json',
+                    data: {
+                        'project_id': projectId,
+                        'equipment_id': equipmentId
+                    },
+                    success: function(data) {
+                        console.log("AJAX Success - Data received:", data);
+                        if (data) {
+                            // 直接更新只读字段的值
+                            $('#equipment_name_field').val(data.equipment_name || '');
+                            $('#equipment_quantity_field').val(data.equipment_quantity || 0);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("AJAX Error:", error);
+                        console.log("Status:", status);
+                        console.log("Response:", xhr.responseText);
+                    }
+                });
+            } else {
+                // 清空字段
+                $('#equipment_name_field').val('');
+                $('#equipment_quantity_field').val(0);
             }
         });
-    });
 
-    // 设备ID改变时加载设备详情
-    $('#id_equipment_id').change(function() {
-        var projectId = $('#id_project_id').val();
-        var equipmentId = $(this).val();
-
-        if (projectId && equipmentId) {
-            $.ajax({
-                url: "{% url 'project_equipment_schedule:ajax_load_equipment_details' %}",
-                data: {
-                    'project_id': projectId,
-                    'equipment_id': equipmentId
-                },
-                success: function(data) {
-                    if (data) {
-                        $("#id_equipment_name").val(data.equipment_name);
-                        $("#id_equipment_quantity").val(data.equipment_quantity);
-                    }
-                }
-            });
+        // 页面加载时，如果已经有选中的设备，触发一次change事件
+        if (equipmentSelect.val()) {
+            console.log("Triggering change for initial value:", equipmentSelect.val());
+            equipmentSelect.trigger('change');
         }
+        {% else %}
+        console.log("In edit mode, skipping AJAX binding");
+        {% endif %}
     });
-    {% endif %}
-});
+})(jQuery);
 </script>
 {% endblock %}

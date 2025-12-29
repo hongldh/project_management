@@ -4,5 +4,5 @@ from . import views
 
 app_name = 'schedule_apply_approve'
 urlpatterns = [
-    path('', views.approval_view, name='main'),
+    path('', views.approval_view, name='list'),
 ]

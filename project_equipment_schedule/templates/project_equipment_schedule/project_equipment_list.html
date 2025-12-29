@@ -1,0 +1,51 @@
+<!-- project_equipment_schedule/templates/project_equipment_schedule/list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">设备制造排期管理 - {{ project.project_name }} ({{ project.project_id }})</h2>
+    <a href="{% url 'project_equipment_schedule:create' project.project_id %}" class="btn btn-primary float-end">新增排期</a>
+
+    <!-- 按设备ID分组显示 -->
+    {% for equipment_id, schedules in grouped_schedules.items %}
+    <div class="equipment-group mb-4">
+        <h3>设备ID: {{ equipment_id }}</h3>
+        <h4>{{ schedules.0.equipment_name }}</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>设备数量</th>
+                    <th>阶段</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>进度</th>  <!-- 新增列 -->
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.equipment_quantity }}</td>
+                    <td>{{ schedule.phase }}</td>
+                    <td>{{ schedule.start_time|date:"Y-m-d H:i" }}</td>
+                    <td>{{ schedule.end_time|date:"Y-m-d H:i" }}</td>
+                    <td>{{ schedule.progress }}</td>  <!-- 新增列数据 -->
+                    <td>
+                        {% if schedule.phase == 'SC' %}
+                            <a href="{% url 'project_equipment_schedule:purchase_detail' project_id=project.project_id equipment_id=equipment_id %}" class="btn btn-info btn-sm">明细</a>
+                        {% endif %}
+                        <a href="{% url 'project_equipment_schedule:update' project_id=schedule.project_id equipment_id=schedule.equipment_id phase=schedule.phase %}" class="btn btn-sm btn-warning">编辑</a>
+                        <a href="{% url 'project_equipment_schedule:delete' project_id=schedule.project_id equipment_id=schedule.equipment_id phase=schedule.phase %}" class="btn btn-sm btn-danger">删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+    <div class="mt-5">
+        <a href="{% url 'project_equipment_schedule:project_list' %}" class="btn btn-secondary">返回项目列表</a>
+        <a href="/" class="btn btn-secondary">返回首页</a>
+    </div>
+</div>
+{% endblock %}

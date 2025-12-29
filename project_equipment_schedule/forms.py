@@ -1,28 +1,16 @@
-from xml.etree.ElementTree import tostring
-
 from django import forms
-from common.models import Project_Basic_Info, Project_Equipment_Info, Project_Equipment_Schedule
+from common.models import Project_Basic, Project_Equipment, Project_Equipment_Schedule
+import logging
+
 
 class ScheduleForm(forms.ModelForm):
-    project_id = forms.ModelChoiceField(
-        queryset=Project_Basic_Info.objects.all(),
-        empty_label=None,
-        label='项目ID',
+    # 设备ID字段需要正确配置
+    equipment_id = forms.ChoiceField(
+        choices=[],  # 初始为空，后续在视图中设置
+        label='设备编号',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-    # 添加这两个字段并设置为非必填
-    equipment_name = forms.CharField(
-        label='设备名称',
-        required=False,  # 关键修改
-        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
-    )
-
-    equipment_quantity = forms.IntegerField(
-        label='设备数量',
-        required=False,  # 关键修改
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
-    )
 
     phase = forms.CharField(
         label='阶段',
@@ -31,79 +19,95 @@ class ScheduleForm(forms.ModelForm):
 
     class Meta:
         model = Project_Equipment_Schedule
-        fields = ['project_id', 'equipment_id', 'equipment_name', 'equipment_quantity', 'phase', 'start_time', 'end_time']
+        # 移除fields中的project_id
+        fields = ['equipment_id', 'phase', 'start_time', 'end_time']
         widgets = {
-            'equipment_id': forms.Select(attrs={'class': 'form-select'}),
             'phase': forms.TextInput(attrs={'class': 'form-control'}),
-            'start_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
-            'end_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'start_time': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M'  # 设置与HTML5 datetime-local兼容的格式
+            ),
+            'end_time': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M'  # 设置与HTML5 datetime-local兼容的格式
+            ),
+        }
+        # 确保表单字段接受指定的格式
+        input_formats = {
+            'start_time': ['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S'],
+            'end_time': ['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S'],
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # 编辑模式下禁用不可修改字段
-        if self.instance.pk:  # 编辑模式
-            disabled_fields = ['project_id', 'equipment_id', 'equipment_name',
-                               'equipment_quantity', 'phase']
+        if self.instance.pk:
+            # 编辑模式
+            disabled_fields = ['equipment_id']
             for field in disabled_fields:
                 self.fields[field].disabled = True
                 self.fields[field].widget.attrs['class'] = 'form-control-plaintext'
-
             # 确保设备ID查询集正确设置
             if self.instance.project_id:
-                self.fields['equipment_id'].queryset = Project_Equipment_Info.objects.filter(
-                    project_id=self.instance.project_id
+                # 编辑模式下，设置当前设备ID为唯一选项
+                equipment_info = Project_Equipment.objects.get(
+                    project_id=self.instance.project_id,
+                    equipment_id=self.instance.equipment_id
                 )
-        else:  # 创建模式
+                self.fields['equipment_id'].choices = [
+                    (self.instance.equipment_id, f"{self.instance.equipment_id} - {equipment_info.equipment_name}")
+                ]
+        else:
+            # 创建模式
+            # 确保下拉框有正确的样式类
+            self.fields['equipment_id'].widget.attrs['class'] = 'form-select'
+            # 确保下拉框没有被禁用
+            self.fields['equipment_id'].disabled = False
+            # 移除只读属性（如果有的话）
+            self.fields['equipment_id'].widget.attrs.pop('readonly', None)
 
-            self.fields['equipment_id'].queryset = Project_Equipment_Info.objects.none()
-
-            if 'project_id' in self.data:
-                try:
-                    project_id = self.data.get('project_id')
-                    print("project_id:")
-                    print(f"  {project_id}")
-                    self.fields['equipment_id'].queryset = Project_Equipment_Info.objects.filter(
-                        project_id=project_id
-                    ).order_by('equipment_id')
-                except (ValueError, TypeError):
-                    pass  # 无效输入，使用空查询集
-            elif self.instance.pk and self.instance.project_id:
-                # 使用 project_id 直接过滤设备
-                self.fields['equipment_id'].queryset = Project_Equipment_Info.objects.filter(
-                    project_id=self.instance.project_id
-                ).order_by('equipment_id')
     def clean(self):
+
+        logger = logging.getLogger(__name__)
+
         cleaned_data = super().clean()
+        logger.info("cleaned_data1: %s", cleaned_data)
 
-        print('完整的 cleaned_data:')
-        for key, value in cleaned_data.items():
-                print(f"  {key}: {value}")
+        # 获取equipment_id值（可能来自隐藏字段或实例）
+        equipment_id = cleaned_data.get('equipment_id')
 
-        project_obj = cleaned_data.get("project_id")
-        equipment_id = cleaned_data.get("equipment_id")
+        # 处理可能的字符串值（来自隐藏字段）
+        if isinstance(equipment_id, str):
+            # 不需要转换，直接使用
+            pass
+        # 编辑模式下，如果字段被禁用导致没有提交数据，从实例中获取
+        elif self.instance.pk and equipment_id is None:
+            equipment_id = self.instance.equipment_id
+        # 如果equipment_id是对象，获取其equipment_id属性
+        elif hasattr(equipment_id, 'equipment_id'):
+            equipment_id = equipment_id.equipment_id
 
-        if project_obj and equipment_id:
+        cleaned_data['equipment_id'] = equipment_id
+        logger.info("cleaned_data['equipment_id']: %s", cleaned_data['equipment_id'])
+        logger.info("cleaned_data2: %s", cleaned_data)
+        # 验证唯一约束
+        if self.instance.pk:
+            # 编辑模式：检查是否与其他记录冲突
             try:
-                # 获取设备信息
-                equipment_info = Project_Equipment_Info.objects.get(
-                    project_id=project_obj.project_id,
-                    equipment_id=equipment_id
+                logger.info("project_id2：%s",self.instance.project_id)
+                logger.info("equipment_id：%s", equipment_id)
+                logger.info("cleaned_data.get('phase')：%s", cleaned_data.get('phase'))
+                logger.info("self.instance.pk：%s", self.instance.pk)
+
+                existing = Project_Equipment_Schedule.objects.exclude(pk=self.instance.pk).get(
+                    project_id=self.instance.project_id,
+                    equipment_id=equipment_id,
+                    phase=cleaned_data.get('phase')
                 )
-                # 自动填充设备名称和数量
-                cleaned_data['equipment_name'] = equipment_info.equipment_name
-                cleaned_data['equipment_quantity'] = equipment_info.equipment_quantity
-                print('equipment_name:'+cleaned_data['equipment_name'])
-                print(f'equipment_quantity:  {cleaned_data['equipment_quantity']}')
-                # 同时设置到实例
-                self.instance.equipment_name = equipment_info.equipment_name
-                self.instance.equipment_quantity = equipment_info.equipment_quantity
-            except Project_Equipment_Info.DoesNotExist:
-                # 添加错误信息
-                self.add_error('equipment_id', f"项目 {project_id} 中没有设备 {equipment_id}")
-                print("------------------ clean error ------------------");
-                print('equipment_id', f"项目 {project_id} 中没有设备 {equipment_id}")
+                self.add_error('phase', '该阶段已经存在，请选择其他阶段')
+                logger.info("~~~~~~~~~ 2 ~~~~~~~~~~~~")
+            except Project_Equipment_Schedule.DoesNotExist:
+                logger.info("~~~~~~~~~ 3 ~~~~~~~~~~~~")
+                pass
 
         return cleaned_data
-

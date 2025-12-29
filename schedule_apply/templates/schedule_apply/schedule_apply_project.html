@@ -23,7 +23,7 @@
             <div class="equipment-group mb-4">
                 {# 通过第一个元素获取项目名称 #}
                 <h4>
-                    {{ equipment.list.0.equipment_name }} ({{ equipment.grouper }})
+                    {{ equipment_dict|get_item:equipment.grouper|get_attr:'equipment_name' }} ({{ equipment.grouper }})
                     <span class="badge bg-info">理论完成进度：{{ progress_data|get_item:equipment.grouper }}%</span>
                 </h4>
                 <table class="table">
@@ -39,20 +39,9 @@
                     <tbody>
                         {% for schedule in equipment.list %}
                         <tr>
-                            <!-- 隐藏字段 -->
-{#                            <input type="hidden" name="project_id_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"#}
-{#                                   value="{{ schedule.project_id }}">#}
-{#                            <input type="hidden" name="equipment_id_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"#}
-{#                                   value="{{ schedule.equipment_id }}">#}
-                            <!-- 显示字段 -->
+
                             <td>{{ schedule.equipment_name }} ({{ schedule.equipment_id }})</td>
-                            <td>
-                                <input type="number"
-                                       name="quantity_{{ schedule.project_id }}_{{ schedule.equipment_id }}_{{ schedule.phase }}"
-                                       value="{{ schedule.equipment_quantity }}"
-                                       class="form-control"
-                                       min="1">
-                            </td>
+                            <td>{{ equipment_dict|get_item:schedule.equipment_id|get_attr:'equipment_quantity' }}</td>
                             <td>{{ schedule.phase }}</td>
                             <td>
                                 <input type="datetime-local"
@@ -103,6 +92,10 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div class="mt-5">
+        <a href="{% url 'schedule_apply:project_list' %}" class="btn btn-secondary">返回项目列表</a>
+        <a href="/" class="btn btn-secondary">返回首页</a>
     </div>
 </div>
 {% endblock %}

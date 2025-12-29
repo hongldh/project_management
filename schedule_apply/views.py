@@ -9,7 +9,7 @@ import logging
 from django.shortcuts import render
 from django.db import connection
 from pytz import utc
-from common.models import Project_Basic_Info
+from common.models import Project_Basic,Project_Equipment
 
 
 def schedule_apply_test(request):
@@ -18,7 +18,7 @@ def schedule_apply_test(request):
 
 
 def schedule_apply(request):
-    projects = Project_Basic_Info.objects.all().values('project_id', 'project_name')
+    projects = Project_Basic.objects.all().values('project_id', 'project_name')
     return render(request, 'schedule_apply/schedule_apply.html', {'projects': projects})
 
 @require_http_methods(["GET", "POST"])
@@ -31,6 +31,7 @@ def schedule_apply_project(request, project_id):
     logger.error("=== 测试ERROR日志可见性 ===")
 
     print("======= request.POST: =======")
+
     print(request.POST);
     if request.method == 'POST':
         # 获取所有涉及修改的记录标识
@@ -71,7 +72,6 @@ def schedule_apply_project(request, project_id):
 
                     # 检查是否有修改
                     if any([
-                        new_quantity != str(schedule.equipment_quantity),
                         parsed_start != schedule_start_time_local,
                         parsed_end != schedule_end_time_local
                     ]):
@@ -83,12 +83,13 @@ def schedule_apply_project(request, project_id):
                         Project_Equipment_Schedule_History.objects.create(
                             project_id=schedule.project_id,
                             equipment_id=schedule.equipment_id,
-                            equipment_name=schedule.equipment_name,
-                            equipment_quantity=new_quantity,
+                            # equipment_name=schedule.equipment_name,
+                            # equipment_quantity=new_quantity,
                             phase=schedule.phase,
                             start_time=parsed_start,
                             end_time=parsed_end,
-                            modified_at=timezone.localtime()
+                            modified_at=timezone.localtime(),
+                            processed_flag=0
                         )
 
                         # print("^^^^^^^^^^^^^^^")
@@ -106,22 +107,22 @@ def schedule_apply_project(request, project_id):
     #GET请求处理
 
     # 获取项目基础信息
-    project = Project_Basic_Info.objects.get(project_id=project_id)
+    project = Project_Basic.objects.get(project_id=project_id)
 
     # 原生SQL计算进度百分比
     with connection.cursor() as cursor:
         cursor.execute("""
                        SELECT equipment_id,
-                              ROUND(
-                                      (SUM(CASE WHEN datetime('now')  < start_time THEN 0
-                                                WHEN datetime('now')  > end_time THEN JULIANDAY(end_time) - JULIANDAY(start_time)
-                                                ELSE JULIANDAY(datetime('now'))  - JULIANDAY(start_time) END))
-                                          /
-                                      (SUM(JULIANDAY(end_time) - JULIANDAY(start_time))) * 100
-                                  , 2) as progress
-                       FROM common_project_equipment_schedule
-                       WHERE project_id = %s
-                       GROUP BY equipment_id
+                       ROUND(
+                               (SUM(CASE WHEN now()  < start_time THEN 0
+                                         WHEN now()  > end_time THEN UNIX_TIMESTAMP(end_time) / (24 * 60 * 60) - UNIX_TIMESTAMP(start_time) / (24 * 60 * 60)
+                                         ELSE UNIX_TIMESTAMP(now()) / (24 * 60 * 60)  - UNIX_TIMESTAMP(start_time) / (24 * 60 * 60) END))
+                                   /
+                               (SUM(UNIX_TIMESTAMP(end_time) / (24 * 60 * 60) - UNIX_TIMESTAMP(start_time) / (24 * 60 * 60))) * 100
+                           , 2) as progress
+                        FROM common_project_equipment_schedule
+                        WHERE project_id = %s
+                        GROUP BY equipment_id
                        """, [project_id])
         progress_data = dict(cursor.fetchall())
 
@@ -133,8 +134,10 @@ def schedule_apply_project(request, project_id):
         order_by=['equipment_id', 'phase_order']
     )
 
-    print("----------------  schedules:  -------------\n")
-    print(schedules)
+    # 获取设备信息
+    equipment_info = Project_Equipment.objects.filter(project_id=project_id)
+    equipment_dict = {eq.equipment_id: eq for eq in equipment_info}
+
 
     # 获取历史记录
     history = Project_Equipment_Schedule_History.objects.filter(project_id=project_id).order_by('-modified_at')
@@ -143,7 +146,8 @@ def schedule_apply_project(request, project_id):
         'project': project,
         'schedules': schedules,
         'history': history,
-        'progress_data': progress_data
+        'progress_data': progress_data,
+        'equipment_dict': equipment_dict
     })
 
 

@@ -4,11 +4,11 @@
 <div class="container text-center">
     <h1 class="my-5">物料管理</h1>
     <div class="d-grid gap-3 col-md-6 mx-auto">
-        <a href="{% url 'project_info_handle:list' %}" class="btn btn-success btn-lg">项目管理</a>
+        <a href="{% url 'project_basic:list' %}" class="btn btn-success btn-lg">项目管理</a>
         <a href="{% url 'project_equipment:list' %}" class="btn btn-info btn-lg">项目设备管理</a>
-        <a href="{% url 'project_equipment_schedule:list' %}" class="btn btn-warning btn-lg">设备制造排期管理</a>
-        <a href="{% url 'schedule_apply:main' %}" class="btn btn-primary btn-lg">设备制造排期申请</a>
-        <a href="{% url 'schedule_apply_approve:main' %}" class="btn btn-secondary btn-lg">设备制造排期审批</a>
+        <a href="{% url 'project_equipment_schedule:project_list' %}" class="btn btn-warning btn-lg">设备制造排期管理</a>
+        <a href="{% url 'schedule_apply:project_list' %}" class="btn btn-primary btn-lg">设备制造排期申请</a>
+        <a href="{% url 'schedule_apply_approve:list' %}" class="btn btn-secondary btn-lg">设备制造排期审批</a>
     </div>
 </div>
 {% endblock %}
