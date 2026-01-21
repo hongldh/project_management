@@ -16,6 +16,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="HTML File" />
         <option value="Python Script" />
       </list>
     </option>
@@ -35,28 +36,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Notification.DisplayName-DoNotAsk-GridPaste": "粘贴",
-    "Notification.DoNotAsk-GridPaste": "true",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "cline.proxy.unsupported.AutoDetectProxyData.dismissed": "true",
-    "database.data.extractors.current.export.id": "SQL 插入",
-    "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "E:/Project/Python_Pycharm/VentureProcedure",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-GridPaste&quot;: &quot;粘贴&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-git.bad.executable&quot;: &quot;未安装 Git&quot;,
+    &quot;Notification.DoNotAsk-GridPaste&quot;: &quot;true&quot;,
+    &quot;Notification.DoNotAsk-git.bad.executable&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;cline.proxy.unsupported.AutoDetectProxyData.dismissed&quot;: &quot;true&quot;,
+    &quot;database.data.extractors.current.export.id&quot;: &quot;SQL 插入&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR_AND_PREVIEW&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Downloads&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Project\Python_Pycharm\VentureProcedure\project_equipment_purchase\templates" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="VentureProcedure" type="Python.DjangoServer" factoryName="Django server">
       <module name="ProcessManagement" />
@@ -71,6 +81,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
       <option name="launchJavascriptDebuger" value="false" />
       <option name="port" value="8000" />
       <option name="host" value="" />
@@ -86,8 +97,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.27397.106" />
-        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308" />
+        <option value="bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308" />
       </set>
     </attachedChunks>
   </component>
@@ -138,11 +149,102 @@
       <workItem from="1766211947660" duration="3357000" />
       <workItem from="1766215591556" duration="23977000" />
       <workItem from="1766452932663" duration="43087000" />
-      <workItem from="1766632706107" duration="75783000" />
+      <workItem from="1766632706107" duration="90602000" />
+      <workItem from="1767497321663" duration="1849000" />
+      <workItem from="1767502370940" duration="148000" />
+      <workItem from="1767502547943" duration="1440000" />
+      <workItem from="1767504223930" duration="8365000" />
+      <workItem from="1767512699166" duration="16851000" />
+      <workItem from="1767595536258" duration="217000" />
+      <workItem from="1767595789323" duration="563000" />
+      <workItem from="1767596375502" duration="34316000" />
+      <workItem from="1768012759022" duration="60000" />
+      <workItem from="1768012832848" duration="273000" />
+      <workItem from="1768013158589" duration="173000" />
+      <workItem from="1768013686126" duration="22288000" />
+      <workItem from="1768197973671" duration="30485000" />
+      <workItem from="1768348999275" duration="534000" />
+      <workItem from="1768349692414" duration="163000" />
+      <workItem from="1768349887317" duration="48000" />
+      <workItem from="1768349980573" duration="962000" />
+      <workItem from="1768350965086" duration="100000" />
+      <workItem from="1768351113055" duration="88000" />
+      <workItem from="1768351241319" duration="43000" />
+      <workItem from="1768351320000" duration="116000" />
+      <workItem from="1768351537346" duration="83000" />
+      <workItem from="1768351826859" duration="24000" />
+      <workItem from="1768351983374" duration="68000" />
+      <workItem from="1768352128146" duration="956000" />
+      <workItem from="1768359807994" duration="1365000" />
+      <workItem from="1768361287006" duration="5912000" />
+      <workItem from="1768371305504" duration="7102000" />
+      <workItem from="1768378463752" duration="15935000" />
+      <workItem from="1768456232306" duration="98000" />
+      <workItem from="1768456345383" duration="3094000" />
+      <workItem from="1768459943636" duration="1097000" />
+      <workItem from="1768462203176" duration="408000" />
+      <workItem from="1768462688663" duration="5663000" />
+      <workItem from="1768528913005" duration="85000" />
+      <workItem from="1768529267904" duration="919000" />
+      <workItem from="1768530201277" duration="340000" />
+      <workItem from="1768530570631" duration="138000" />
+      <workItem from="1768530735559" duration="35000" />
+      <workItem from="1768530788744" duration="443000" />
+      <workItem from="1768531265763" duration="330000" />
+      <workItem from="1768531634972" duration="1307000" />
+      <workItem from="1768534063831" duration="67000" />
+      <workItem from="1768534153362" duration="650000" />
+      <workItem from="1768538283295" duration="83000" />
+      <workItem from="1768538411978" duration="404000" />
+      <workItem from="1768538828490" duration="21000" />
+      <workItem from="1768538880315" duration="21000" />
+      <workItem from="1768538925739" duration="36000" />
+      <workItem from="1768538976628" duration="350000" />
+      <workItem from="1768550648843" duration="91000" />
+      <workItem from="1768550848379" duration="43000" />
+      <workItem from="1768550906263" duration="187000" />
+      <workItem from="1768551114091" duration="1115000" />
+      <workItem from="1768552329210" duration="771000" />
+      <workItem from="1768606669627" duration="392000" />
+      <workItem from="1768607097070" duration="700000" />
+      <workItem from="1768607825138" duration="1350000" />
+      <workItem from="1768616943315" duration="65000" />
+      <workItem from="1768617157385" duration="301000" />
+      <workItem from="1768617477954" duration="310000" />
+      <workItem from="1768617808555" duration="154000" />
+      <workItem from="1768617976960" duration="288000" />
+      <workItem from="1768618278171" duration="21000" />
+      <workItem from="1768618331193" duration="201000" />
+      <workItem from="1768618563616" duration="100000" />
+      <workItem from="1768618679431" duration="1354000" />
+      <workItem from="1768631275274" duration="575000" />
+      <workItem from="1768633574991" duration="21000" />
+      <workItem from="1768633610114" duration="21000" />
+      <workItem from="1768633667895" duration="33000" />
+      <workItem from="1768633772555" duration="154000" />
+      <workItem from="1768633951933" duration="3131000" />
+      <workItem from="1768783318594" duration="7000" />
+      <workItem from="1768783345201" duration="13615000" />
+      <workItem from="1768868650380" duration="836000" />
+      <workItem from="1768871903350" duration="70000" />
+      <workItem from="1768872070595" duration="36000" />
+      <workItem from="1768872191439" duration="103000" />
+      <workItem from="1768872307846" duration="25690000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="file-handler:ansi-highlighter" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

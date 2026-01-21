@@ -282,17 +282,17 @@ def purchase_detail(request, project_id, equipment_id):
     # 使用原生SQL查询采购明细信息
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT ci.component_id, ci.component_name, ci.manufacturer, 
+            SELECT pec.component_id, ci.component_name, ci.manufacturer, 
                    pec.component_number_in_diagram, pec.component_quantity, pec.is_completed
             FROM common_project_equipment_component pec
-            JOIN common_component_info ci ON pec.component_id = ci.component_id
+            LEFT JOIN common_component_info ci ON pec.component_id = ci.component_id
             WHERE pec.project_id = %s AND pec.equipment_id = %s
             ORDER BY ci.component_id
         """, [project_id, equipment_id])
         
         columns = [col[0] for col in cursor.description]
         procurement_details = [dict(zip(columns, row)) for row in cursor.fetchall()]
-        
+
     context = {
         'project': project,
         'equipment': equipment,

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>{% if object %}编辑元件{% else %}新建元件{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- 显示非字段错误 -->
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-6">
+                <!-- 项目ID显示为固定文本 -->
+                <div class="mb-3">
+                    <label class="form-label">项目ID</label>
+                    <div class="form-control-plaintext">
+                        {{ project.project_id }}
+                    </div>
+                    <!-- 添加隐藏字段传递项目ID -->
+                    <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                </div>
+                <!-- 设备ID显示为固定文本 -->
+                <div class="mb-3">
+                    <label class="form-label">设备编号</label>
+                    <div class="form-control-plaintext">
+                        {{ equipment.equipment_id }}
+                    </div>
+                    <!-- 添加隐藏字段传递设备ID -->
+                    <input type="hidden" name="equipment_id" value="{{ equipment.equipment_id }}">
+                </div>
+                <!-- 元件型号输入框 -->
+                <div class="mb-3">
+                    <label class="form-label">元件型号</label>
+                    <!-- 直接渲染字段，不做任何额外处理 -->
+                    {{ form.component_id }}
+                    <!-- 显示元件型号错误 -->
+                    {% if form.component_id.errors %}
+                    <div class="text-danger small">
+                        {{ form.component_id.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- 图中元件号 -->
+                <div class="mb-3">
+                    <label class="form-label">图中元件号</label>
+                    {{ form.component_number_in_diagram }}
+                    <!-- 显示图中元件号错误 -->
+                    {% if form.component_number_in_diagram.errors %}
+                    <div class="text-danger small">
+                        {{ form.component_number_in_diagram.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- 元件数量 -->
+                <div class="mb-3">
+                    <label class="form-label">元件数量</label>
+                    {{ form.component_quantity }}
+                    <!-- 显示元件数量错误 -->
+                    {% if form.component_quantity.errors %}
+                    <div class="text-danger small">
+                        {{ form.component_quantity.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- 是否完成 -->
+                <div class="mb-3 form-check">
+                    {{ form.is_completed }}
+                    <label class="form-check-label" for="id_is_completed">是否完成</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'project_equipment_purchase:purchase_detail' project.project_id equipment.equipment_id %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}

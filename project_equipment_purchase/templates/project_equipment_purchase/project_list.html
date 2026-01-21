@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">设备采购管理 - 项目列表</h2>
+    <div class="list-group">
+        {% for project in projects %}
+        <a href="{% url 'project_equipment_purchase:equipment_list' project.project_id %}" 
+           class="list-group-item list-group-item-action">
+           {{ project.project_name }} ({{ project.project_id }})
+        </a>
+        {% endfor %}
+    </div>
+    <div class="mt-5">
+        <a href="/" class="btn btn-secondary">返回首页</a>
+    </div>
+</div>
+{% endblock %}

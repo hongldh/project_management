@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}编辑元件信息{% else %}添加元件信息{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{% if is_edit %}编辑元件信息{% else %}添加元件信息{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">元件型号</label>
+                    {{ form.component_id }}
+                    {% if form.component_id.errors %}
+                    <div class="text-danger small">
+                        {{ form.component_id.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">元件名称</label>
+                    {{ form.component_name }}
+                    {% if form.component_name.errors %}
+                    <div class="text-danger small">
+                        {{ form.component_name.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">生产商</label>
+                    {{ form.manufacturer }}
+                    {% if form.manufacturer.errors %}
+                    <div class="text-danger small">
+                        {{ form.manufacturer.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'component_info:list' %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}

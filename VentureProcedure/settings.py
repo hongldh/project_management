@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'common',
     'project_basic',
     'project_equipment',
+    'component_info',  # 元件登记
+    'project_equipment_purchase',
     'project_equipment_schedule',
     'schedule_apply',
     'schedule_apply_approve',

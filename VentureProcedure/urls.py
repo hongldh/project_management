@@ -28,6 +28,8 @@ urlpatterns = [
     path('', home_view, name='home'),  # 新增首页路由
     path('project_basic/', include('project_basic.urls', namespace='project_basic')),
     path('project_equipment/', include('project_equipment.urls', namespace='project_equipment')),
+    path('component_info/', include('component_info.urls', namespace='component_info')),  # 元件登记
+    path('project_equipment_purchase/', include('project_equipment_purchase.urls', namespace='project_equipment_purchase')),
     path('project_equipment_schedule/', include('project_equipment_schedule.urls',namespace='project_equipment_schedule')),
     path('schedule_apply/', include('schedule_apply.urls')),  # 任务排期应用
     path('schedule_apply_approve/', include('schedule_apply_approve.urls')),  # 审批应用

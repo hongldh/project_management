@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}确认删除{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>确认删除</h2>
+    <p>您确定要删除元件 <strong>{{ object.component_id }} - {{ object.component_name }}</strong> 吗？</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">删除</button>
+        <a href="{% url 'component_info:list' %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}
